@@ -1,0 +1,27 @@
+CornerCase Python task
+
+About
+Company needs internal service for its’ employees which helps them to make a decision
+on lunch place. Each restaurant will be uploading menus using the system every day over
+API and employees will vote for the menu before leaving for lunch.
+The solution can be presented in the Docker environment, which will add additional Karma
+points.
+Requirements for implementation:
+● There should be an API for:
+○ Authentication
+○ Creating restaurant
+○ Uploading menu for restaurant (There should be a menu for each day)
+○ Creating employee
+○ Getting current day menu
+○ Voting for restaurant menu
+
+○ Getting results for the current day. The winner restaurant should not be the
+winner for 3 consecutive working days
+○ Logout
+● Reasonable amount of automated tests
+● Solution should be uploaded to version control
+● Solution should be built using: Django and Python3, Django Rest Framework, SQL
+database of your choice (PostgreSQL, SQLite, MySQL, etc)
+● Sufficient logging must be implemented
+● PEP8 rules must be followed. Additional linters are welcomed (PyLint, etc)
+● Project README.md must be created with launch instructions
