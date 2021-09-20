@@ -18,3 +18,17 @@ class VoteSerializer(serializers.ModelSerializer):
             "employee",
             "menu",
         ]
+
+
+class RestaurantWinnerSerializer(serializers.ModelSerializer):
+    restaurant = UserSerializer(read_only=True)
+    menu = MenuSerializer(read_only=True)
+
+    class Meta:
+        model = Menu
+        fields = '__all__'
+        read_only_fields = [
+            "id",
+            "restaurant",
+            "menu",
+        ]

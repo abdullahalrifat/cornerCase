@@ -1,11 +1,10 @@
-from django.shortcuts import render
+from django.db.models import Avg
 import datetime
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, permissions, status, generics
+from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 # Create your views here.
 from restaurant.models import Menu
@@ -13,9 +12,9 @@ from restaurant.serializers import MenuSerializer
 from user.models import UserProfile
 from user.serializers import UserSerializer, UserProfileSerializer
 from user.permissions import IsOwnerOrAdmin
-from .models import Vote
+from .models import Vote, RestaurantWinner
 from .permissions import IsEmployee
-from .serializers import VoteSerializer
+from .serializers import VoteSerializer, RestaurantWinnerSerializer
 
 
 class EmployeeViewSet(viewsets.ViewSet):
@@ -187,4 +186,62 @@ class EmployeeMenuVoteViewSet(viewsets.ViewSet):
                     return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("Lunch Time Finished, Try Between 12:00 AM - 12:00 PM",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class RestaurantWinnerViewSet(viewsets.ViewSet):
+    """
+    Example empty viewset demonstrating the standard
+    actions that will be handled by a router class.
+
+    If you're using format suffixes, make sure to also include
+    the `format=None` keyword argument for each action.
+    """
+    queryset = RestaurantWinner.objects.all()
+    serializer_class = RestaurantWinnerSerializer
+
+    def get_permissions(self):
+        if self.action in ['update']:
+            self.permission_classes = [permissions.IsAdminUser, ]
+        elif self.action in ['destroy']:
+            self.permission_classes = [permissions.IsAdminUser, ]
+        elif self.action in ['retrieve', 'list']:
+            self.permission_classes = [IsAuthenticated]
+        elif self.action in ['create']:
+            self.permission_classes = [permissions.IsAdminUser]
+        return super().get_permissions()
+
+    def list(self, request):
+        today = datetime.date.today()
+        try:
+            winner = RestaurantWinner.objects.get(created__date=today)
+            serializer_class = RestaurantWinnerSerializer(winner)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+        except RestaurantWinner.DoesNotExist:
+            print("Not Calculated Yet")
+
+        if is_now_in_time_period(datetime.time(12, 00), datetime.time(1, 59), datetime.datetime.now().time()):
+            queryset = Vote.objects.filter(created__date=today).values('menu_id') \
+                .annotate(avg_score=Avg('score')).order_by('-avg_score')
+            winner_list = RestaurantWinner.objects.filter().order_by('-created__date')
+            final_winner = None
+            avg_score = None
+            if len(winner_list) > 2:
+                for menu in queryset:
+                    if winner_list[0].menu.id != menu['menu_id'] and winner_list[1].menu.id != menu['menu_id']:
+                        final_winner = Menu.objects.get(id=menu['menu_id'])
+                        avg_score = winner_list[0].avg_score
+                        break
+            else:
+                final_winner = Menu.objects.get(id=queryset[0]['menu_id'])
+                avg_score = queryset[0]['avg_score']
+
+            winner_obj, winner = RestaurantWinner.objects.create(menu=final_winner,
+                                                                 restaurant=final_winner.restaurant,
+                                                                 avg_score=avg_score, winning_date=today)
+            serializer_class = RestaurantWinnerSerializer(winner_obj)
+            print(serializer_class.data)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+        else:
+            return Response("There is Still Voting Time Left, Try Between 12:00 PM - 12:00 AM",
                             status=status.HTTP_406_NOT_ACCEPTABLE)
