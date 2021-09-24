@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from employee.models import Vote
+from employee.models import Vote, RestaurantWinner
 from restaurant.models import Menu
 from restaurant.serializers import MenuSerializer
 from user.serializers import UserSerializer
@@ -25,7 +25,7 @@ class RestaurantWinnerSerializer(serializers.ModelSerializer):
     menu = MenuSerializer(read_only=True)
 
     class Meta:
-        model = Menu
+        model = RestaurantWinner
         fields = '__all__'
         read_only_fields = [
             "id",

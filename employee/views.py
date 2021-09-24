@@ -223,9 +223,14 @@ class RestaurantWinnerViewSet(viewsets.ViewSet):
         if is_now_in_time_period(datetime.time(12, 00), datetime.time(1, 59), datetime.datetime.now().time()):
             queryset = Vote.objects.filter(created__date=today).values('menu_id') \
                 .annotate(avg_score=Avg('score')).order_by('-avg_score')
+
+            if len(queryset) == 0:
+                return Response("No Voting Happened Today", status=status.HTTP_200_OK)
+
             winner_list = RestaurantWinner.objects.filter().order_by('-created__date')
             final_winner = None
             avg_score = None
+            print(queryset)
             if len(winner_list) > 2:
                 for menu in queryset:
                     if winner_list[0].menu.id != menu['menu_id'] and winner_list[1].menu.id != menu['menu_id']:
@@ -236,9 +241,9 @@ class RestaurantWinnerViewSet(viewsets.ViewSet):
                 final_winner = Menu.objects.get(id=queryset[0]['menu_id'])
                 avg_score = queryset[0]['avg_score']
 
-            winner_obj, winner = RestaurantWinner.objects.create(menu=final_winner,
-                                                                 restaurant=final_winner.restaurant,
-                                                                 avg_score=avg_score, winning_date=today)
+            winner_obj = RestaurantWinner.objects.create(menu=final_winner,
+                                                         restaurant=final_winner.restaurant,
+                                                         avg_score=avg_score, winning_date=today)
             serializer_class = RestaurantWinnerSerializer(winner_obj)
             print(serializer_class.data)
             return Response(serializer_class.data, status=status.HTTP_200_OK)
