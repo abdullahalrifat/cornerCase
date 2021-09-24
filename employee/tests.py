@@ -1,3 +1,6 @@
+import datetime
+from django.db.models import Avg
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 import random
@@ -43,8 +46,16 @@ class employeeTestCase(TestCase):
         users = User.objects.all()
         menus = Menu.objects.all()
         for user in users:
-            if len(UserProfile.objects.get(userType="employee")):
+            user_list = UserProfile.objects.filter(user=user, userType="employee")
+            # print(user_list)
+            if len(user_list):
                 for menu in menus:
                     score = random.uniform(1, 10)
-                    print(user.username + " voting for " + menu.name + " score=" + score)
+                    print(user.username + " voting for " + menu.name + " score=" + str(score))
                     Vote.objects.create(menu=menu, employee=user, score=score)
+
+        today = datetime.date.today()
+        queryset = Vote.objects.filter(created__date=today).values('menu_id') \
+            .annotate(avg_score=Avg('score')).order_by('-avg_score')
+
+        print(queryset)
