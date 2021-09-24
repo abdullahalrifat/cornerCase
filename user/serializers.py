@@ -1,21 +1,5 @@
-from collections import OrderedDict
-
-from django.contrib.auth.models import User
 from rest_framework import serializers
-import json
-from django.core import serializers as django_serializer
-
 from user.models import *
-
-
-class JSONSerializerField(serializers.Field):
-    """ Serializer for JSONField -- required to make field writable"""
-
-    def to_internal_value(self, data):
-        return data
-
-    def to_representation(self, value):
-        return value
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,11 +35,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-
+    
     class Meta:
         model = UserProfile
         fields = '__all__'
         read_only_fields = [
             "id",
             "user",
+            "userType",
         ]

@@ -7,7 +7,7 @@ from django.dispatch import receiver
 
 # Create your models here.
 class Menu(models.Model):
-    restaurant = models.ForeignKey(User, on_delete=models.CASCADE, related_name="restaurant")
+    restaurant = models.ForeignKey(User, on_delete=models.CASCADE, related_name="restaurant_menu")
     name = models.CharField(max_length=100, null=False, blank=False)
     details = models.CharField(max_length=100, null=False, blank=False)
     photo = models.ImageField(upload_to='restaurant/menu/%Y/%m/%d', null=True, blank=True)

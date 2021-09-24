@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 # Create your views here.
+from employee.models import RestaurantWinner
 from restaurant.models import Menu
 from restaurant.permissions import IsRestaurant
 from restaurant.serializers import MenuSerializer
@@ -176,4 +177,5 @@ class MenuViewSet(viewsets.ViewSet):
         menu = get_object_or_404(Menu, id=pk)
         serializer = MenuSerializer(menu)
         return Response(serializer.data)
+
 
