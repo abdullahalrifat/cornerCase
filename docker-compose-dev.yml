@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+
+    backend:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        command: 'python manage.py runserver 0.0.0.0:8000'
+        volumes:
+            - static_volume:/app/django_static
+        expose:
+            - 8000
+volumes:
+    static_volume: {}

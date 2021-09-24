@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from employee.models import Vote, RestaurantWinner
-from restaurant.models import Menu
 from restaurant.serializers import MenuSerializer
 from user.serializers import UserSerializer
 

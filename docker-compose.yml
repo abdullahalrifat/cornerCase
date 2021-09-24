@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+
+    backend:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        entrypoint: /app/wsgi-entrypoint.sh
+        volumes:
+            - static_volume:/app/django_static
+        expose:
+            - 8000
+
+
+volumes:
+    static_volume: {}
+
+

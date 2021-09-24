@@ -29,18 +29,18 @@ class employeeTestCase(TestCase):
         userProfileRestaurant1 = UserProfile.objects.get(user=restaurant1)
         userProfileRestaurant1.userType = "restaurant"
         userProfileRestaurant1.save()
-        menu1 = Menu.objects.create(restaurant=restaurant1, name="menu1")
+        Menu.objects.create(restaurant=restaurant1, name="menu1")
         restaurant2 = User.objects.create(username="restaurant2", email="restaurant2@gmail.com")
         userProfileRestaurant2 = UserProfile.objects.get(user=restaurant2)
         userProfileRestaurant2.userType = "restaurant"
         userProfileRestaurant2.save()
-        menu2 = Menu.objects.create(restaurant=restaurant2, name="menu1")
+        Menu.objects.create(restaurant=restaurant2, name="menu1")
 
         restaurant3 = User.objects.create(username="restaurant3", email="restaurant3@gmail.com")
         userProfileRestaurant3 = UserProfile.objects.get(user=restaurant3)
         userProfileRestaurant3.userType = "restaurant"
         userProfileRestaurant3.save()
-        menu3 = Menu.objects.create(restaurant=restaurant3, name="menu1")
+        Menu.objects.create(restaurant=restaurant3, name="menu1")
 
     def employee_voting(self):
         users = User.objects.all()
