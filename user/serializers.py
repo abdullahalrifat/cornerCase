@@ -23,7 +23,6 @@ class UserSerializer(serializers.ModelSerializer):
         userProfile = UserProfile.objects.get(user=user)
         userProfile.userType = validated_data['userType']
         userProfile.save()
-        # convert into JSON:
         return user
 
     def update(self, instance, validated_data):
