@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+
+    backend:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        command: python manage.py runserver 0.0.0.0:8000
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/app

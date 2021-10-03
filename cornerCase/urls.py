@@ -33,8 +33,8 @@ router.registry.extend(employee_routers.registry)
 router.registry.extend(restaurant_routers.registry)
 
 urlpatterns = [
-                  path('admin/', admin.site.urls),
-                  url(r'^api/v1/', include(router.urls)),
-                  url(r'^api/v1/logout$', logout, name="logout"),
-                  path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('admin/', admin.site.urls),
+    url(r'^api/v1/', include(router.urls)),
+    url(r'^api/v1/logout$', logout, name="logout"),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,4 +1,3 @@
-from django.shortcuts import render
 import datetime
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -7,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 # Create your views here.
-from employee.models import RestaurantWinner
 from restaurant.models import Menu
 from restaurant.permissions import IsRestaurant
 from restaurant.serializers import MenuSerializer
@@ -118,7 +116,7 @@ def is_now_in_time_period(start_time, end_time, now_time):
     if start_time < end_time:
         return now_time >= start_time and now_time <= end_time
     else:
-        #Over midnight:
+        # Over midnight:
         return now_time >= start_time or now_time <= end_time
 
 
@@ -177,5 +175,3 @@ class MenuViewSet(viewsets.ViewSet):
         menu = get_object_or_404(Menu, id=pk)
         serializer = MenuSerializer(menu)
         return Response(serializer.data)
-
-
