@@ -7,14 +7,8 @@ services:
         build:
             context: .
             dockerfile: ./Dockerfile
-        entrypoint: /app/wsgi-entrypoint.sh
+        command: python manage.py runserver 0.0.0.0:8000
+        ports:
+            - "8000:8000"
         volumes:
-            - static_volume:/app/django_static
-        expose:
-            - 8000
-
-
-volumes:
-    static_volume: {}
-
-
+            - .:/app
