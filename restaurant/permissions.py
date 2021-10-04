@@ -10,6 +10,13 @@ class IsOwnerOrAdmin(permissions.BasePermission):
         return obj == request.user or request.user.is_superuser
 
 
+class IsSuperAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user.is_superuser
+
+
 class IsRestaurant(permissions.BasePermission):
     def has_permission(self, request, view):
         return UserProfile.objects.get(user=request.user).userType == "restaurant" or request.user.is_superuser

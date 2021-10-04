@@ -7,13 +7,14 @@ from rest_framework.response import Response
 
 # Create your views here.
 from restaurant.models import Menu
-from restaurant.permissions import IsRestaurant
+from restaurant.permissions import IsRestaurant, IsSuperAdmin
 from restaurant.serializers import MenuSerializer
 from user.models import UserProfile
 from user.serializers import UserSerializer, UserProfileSerializer
 from user.permissions import IsOwnerOrAdmin
 
 
+# RestaurantViewSet to handle Employee create,update,delete,list
 class RestaurantViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -65,6 +66,7 @@ class RestaurantViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# RestaurantProfileViewSet to store additional information like userType='restaurant'
 class RestaurantProfileViewSet(viewsets.ViewSet):
     """
     Example empty viewset demonstrating the standard
@@ -112,6 +114,7 @@ class RestaurantProfileViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# checking if specific time between two times or not
 def is_now_in_time_period(start_time, end_time, now_time):
     if start_time < end_time:
         return start_time <= now_time <= end_time
@@ -120,6 +123,7 @@ def is_now_in_time_period(start_time, end_time, now_time):
         return now_time >= start_time or now_time <= end_time
 
 
+# MenuViewSet to handle Menu create,update,delete,list
 class MenuViewSet(viewsets.ViewSet):
     """
     Example empty viewset demonstrating the standard
@@ -133,7 +137,7 @@ class MenuViewSet(viewsets.ViewSet):
 
     def get_permissions(self):
         if self.action in ['update']:
-            self.permission_classes = [IsOwnerOrAdmin, ]
+            self.permission_classes = [IsSuperAdmin, ]
         elif self.action in ['destroy']:
             self.permission_classes = [permissions.IsAdminUser, ]
         elif self.action in ['retrieve', 'list']:
@@ -144,8 +148,12 @@ class MenuViewSet(viewsets.ViewSet):
 
     def create(self, request):
         today = datetime.date.today()
-        if is_now_in_time_period(datetime.time(00, 00), datetime.time(12, 00), datetime.datetime.now().time()):
+        # checking if time is between 12AM - 11AM or not
+        # between that time restaurants can create Menu
+        if is_now_in_time_period(datetime.time(00, 00), datetime.time(11, 00), datetime.datetime.now().time()):
             try:
+                # a restaurant can have a single menu for single day
+                # if menu already created fetching that object
                 menu = Menu.objects.get(created__date=today, restaurant=request.user)
                 serializer = MenuSerializer(instance=menu, data=request.data)
                 serializer.is_valid(raise_exception=True)
@@ -153,6 +161,7 @@ class MenuViewSet(viewsets.ViewSet):
                 return Response({'Success': "Menu Updated Successful", "menu_details": serializer.data},
                                 status=status.HTTP_202_ACCEPTED)
             except Menu.DoesNotExist:
+                # if not already created create one
                 serialized = MenuSerializer(data=request.data)
                 user = request.user
                 if serialized.is_valid():
@@ -163,7 +172,7 @@ class MenuViewSet(viewsets.ViewSet):
                 else:
                     return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response("Lunch Time Finished, Try Between 12:00 AM - 12:00 PM",
+            return Response("Lunch Time Finished, Try Between 12:00 AM - 11:00 AM",
                             status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def list(self, request):
@@ -175,3 +184,15 @@ class MenuViewSet(viewsets.ViewSet):
         menu = get_object_or_404(Menu, id=pk)
         serializer = MenuSerializer(menu)
         return Response(serializer.data)
+
+    def destroy(self, request, pk=None):
+        today = datetime.date.today()
+        # checking if time is between 12AM - 11AM or not
+        # between that time restaurants can delete/update Menu
+        if is_now_in_time_period(datetime.time(00, 00), datetime.time(11, 00), datetime.datetime.now().time()):
+            menu = get_object_or_404(Menu, id=pk)
+            menu.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("Time Finished to Edit/Delete",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
