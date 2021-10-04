@@ -41,7 +41,6 @@ Project is created with:
 To run this project, locally using docker:
 
 ```
-$ cd cornerCase
 $ sudo docker-compose down
 $ sudo docker-compose build
 $ sudo docker-compose up --detach
