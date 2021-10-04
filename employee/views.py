@@ -36,7 +36,7 @@ class EmployeeViewSet(viewsets.ViewSet):
         serialized = UserSerializer(data=request.data)
 
         if serialized.is_valid():
-            user = serialized.save(userType="employee")
+            serialized.save(userType="employee")
 
             return Response("Employee created successfully", status=status.HTTP_201_CREATED)
         else:
@@ -140,7 +140,7 @@ class EmployeeMenuViewSet(viewsets.ViewSet):
 
 def is_now_in_time_period(start_time, end_time, now_time):
     if start_time < end_time:
-        return now_time >= start_time and now_time <= end_time
+        return start_time <= now_time <= end_time
     else:
         # Over midnight:
         return now_time >= start_time or now_time <= end_time

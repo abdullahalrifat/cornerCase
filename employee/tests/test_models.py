@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-import random
 import datetime
 from django.db.models import Avg
 
@@ -69,4 +68,3 @@ class TestModels(TestCase):
             .annotate(avg_score=Avg('score')).order_by('-avg_score')
 
         self.assertEqual(queryset[0]['menu_id'], self.menu3.id)
-
